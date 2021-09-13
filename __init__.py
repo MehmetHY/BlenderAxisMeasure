@@ -1,7 +1,7 @@
 import bpy
 import mathutils
 import bgl
-import utils
+from . import utils
 
 
 bl_info = {
