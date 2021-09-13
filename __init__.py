@@ -171,7 +171,7 @@ class axis_measurement(bpy.types.Operator):
             self.deactivate()
             context.area.tag_redraw()
             return {'FINISHED'}
-        if not bpy.context.object.mode == 'EDIT':
+        if bpy.context.object == None or not bpy.context.object.mode == 'EDIT':
             self._edge_coords = []
         else:
             self._edge_coords = utils.mesh_get_selected_edges_coords()
