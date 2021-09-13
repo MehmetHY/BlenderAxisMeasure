@@ -8,3 +8,4 @@ A Blender add-on that draws the distance between the two vertices of an edge.
 ![Alt text](../screenshots/blender_axis_measure1.png?raw=true "Title")
 ![Alt text](../screenshots/blender_axis_measure2.png?raw=true "Title")
 ![Alt text](../screenshots/blender_axis_measure3.png?raw=true "Title")
+![Alt text](../screenshots/blender_axis_measure4.png?raw=true "Title")
