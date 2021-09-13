@@ -4,6 +4,20 @@ import bgl
 import utils
 
 
+bl_info = {
+    "name": "Axis Measure",
+    "author": "MehmetHY",
+    "version": (1, 0),
+    "blender": (2, 93, 0),
+    "location": "3D View -> N Panel -> View -> Axis Measure",
+    "description": "Draws the distance between the two vertices of an edge.",
+    "warning": "",
+    "doc_url": "",
+    "tracker_url": "https://github.com/MehmetHY/BlenderEasyGridResizer",
+    "category": "3D View"
+}
+
+
 global_vars = {'Active': False, 'Handler2D': None, 'Handler3D': None}
 
 def draw_edge_lines_callback(self, context):
@@ -61,7 +75,7 @@ class axis_measurement_props(bpy.types.PropertyGroup):
 
 class axis_measurement_panel(bpy.types.Panel):
     bl_idname = 'AXISMEASUREMENT_PT_main_panel'
-    bl_label = 'Axis Measurement'
+    bl_label = 'Axis Measure'
     bl_region_type = 'UI'
     bl_space_type = 'VIEW_3D'
     bl_category = 'View'
