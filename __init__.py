@@ -167,11 +167,14 @@ class axis_measurement(bpy.types.Operator):
     bl_options = {'REGISTER'}
 
     def modal(self, context, event):
-        if not bpy.context.object.mode == 'EDIT' or not global_vars['Active']:
+        if not global_vars['Active']:
             self.deactivate()
             context.area.tag_redraw()
             return {'FINISHED'}
-        self._edge_coords = utils.mesh_get_selected_edges_coords()
+        if not bpy.context.object.mode == 'EDIT':
+            self._edge_coords = []
+        else:
+            self._edge_coords = utils.mesh_get_selected_edges_coords()
         context.area.tag_redraw()
         return {'PASS_THROUGH'}
 
