@@ -44,11 +44,9 @@ def mesh_get_active_element():
     elem = bm.select_history.active
     return elem
 
-def mesh_get_selected_vertices_from_selected_objects(stay_in_edit_mode = False):
-    mode = bpy.context.object.mode
-    bpy.ops.object.mode_set(mode='EDIT')
+def mesh_get_selected_vertices_from_selected_objects():
+    objs = [obj for obj in object_get_selected() if obj.mode == 'EDIT']
     all_selected_verts = []
-    objs = object_get_selected()
     for obj in objs:
         bm = bmesh.from_edit_mesh(obj.data)
         elems = []
@@ -56,8 +54,6 @@ def mesh_get_selected_vertices_from_selected_objects(stay_in_edit_mode = False):
             if vert.select:
                 elems.append(vert)
         all_selected_verts.extend(elems)
-    if not stay_in_edit_mode:
-        bpy.ops.object.mode_set(mode=mode)
     return all_selected_verts
 
 def mesh_get_selected_edges_from_selected_objects(stay_in_edit_mode = False):
@@ -114,6 +110,18 @@ def mesh_get_selected_edges_coords():
                 vert2 = obj.matrix_world @ vert2
                 coords.append((vert1, vert2))
 
+    return coords
+
+def mesh_get_selected_verts_coords():
+    objs = [obj for obj in object_get_selected() if obj.mode == 'EDIT']
+    coords = []
+    for obj in objs:
+        bm = bmesh.from_edit_mesh(obj.data)
+        for vert in bm.verts:
+            if vert.select:
+                coord = mathutils.Vector((vert.co[0], vert.co[1], vert.co[2]))
+                coord = obj.matrix_world @ coord
+                coords.append(coord)
     return coords
 
 

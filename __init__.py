@@ -23,6 +23,8 @@ global_vars = {'Active': False, 'Handler2D': None, 'Handler3D': None}
 def draw_edge_lines_callback(self, context):
     bgl.glEnable(bgl.GL_BLEND)
     for coord in self._edge_coords:
+        if bpy.context.scene.axis_measure_props.show_line:
+            self.draw_edge_line(coord[0], coord[1])
         if bpy.context.scene.axis_measure_props.show_x_line:
             self.draw_x_line(coord[0], coord[1])
         if bpy.context.scene.axis_measure_props.show_y_line:
@@ -44,7 +46,10 @@ def draw_edge_length_callback(self, context):
     
 
 class axis_measurement_props(bpy.types.PropertyGroup):
+    draw_mode: bpy.props.EnumProperty(items=[('Selected Edges', 'Selected Edges', ''), ('Two Points', 'Two Points', '')], name='Mode', description='Selected Edges: Draws all selected edges.\nTwo Points: Draws only when 2 vertices are selected.', default='Selected Edges')
+
     show_length: bpy.props.BoolProperty(name='Show Length', description='Show Length', default=True)
+    show_line: bpy.props.BoolProperty(name='Show Length Line', description='Show Length Line', default=True)
     show_x_length: bpy.props.BoolProperty(name='Show X Value', description='Show X Value', default=True)
     show_x_line: bpy.props.BoolProperty(name='Show X Line', description='Show X Line', default=True)
     show_y_length: bpy.props.BoolProperty(name='Show Y Value', description='Show Y Value', default=True)
@@ -54,22 +59,24 @@ class axis_measurement_props(bpy.types.PropertyGroup):
 
     precision: bpy.props.IntProperty(name='Precision', description='Precision of the float value', default=2, min=0, max=15)
 
-    length_font_size: bpy.props.IntProperty(name='Length Font Size', description='Length Font Size', default=36, min=12, max=64)
+    length_font_size: bpy.props.IntProperty(name='Length Font Size', description='Length Font Size', default=36, min=12, max=128)
     length_font_color: bpy.props.FloatVectorProperty(name='Length Font Color', description='Length Font Color', size=4, subtype='COLOR', default=(1, 1, 1, 1), min=0, max=1)
+    length_line_width: bpy.props.IntProperty(name='Length Line Width', description='Length Line Width', default=4, min=1, max=24)
+    length_line_color: bpy.props.FloatVectorProperty(name='Length Line Color', description='Length Line Color', size=4, subtype='COLOR', default=(1, 1, 1, 1), min=0, max=1)
     
-    x_font_size: bpy.props.IntProperty(name='X Font Size', description='X Font Size', default=24, min=8, max=64)
+    x_font_size: bpy.props.IntProperty(name='X Font Size', description='X Font Size', default=24, min=8, max=128)
     x_font_color: bpy.props.FloatVectorProperty(name='X Font Color', description='X Font Color', size=4, subtype='COLOR', default=(1, 0, 0, 1), min=0, max=1)
-    x_line_width: bpy.props.IntProperty(name='X-Axis Line Width', description='X-Axis Line Width', default=1, min=1, max=12)
+    x_line_width: bpy.props.IntProperty(name='X-Axis Line Width', description='X-Axis Line Width', default=1, min=1, max=24)
     x_line_color: bpy.props.FloatVectorProperty(name='X-Axis Line Color', description='X-Axis Line Color', size=4, subtype='COLOR', default=(1, 0, 0, 1), min=0, max=1)
     
-    y_font_size: bpy.props.IntProperty(name='Y Font Size', description='Y Font Size', default=24, min=8, max=64)
+    y_font_size: bpy.props.IntProperty(name='Y Font Size', description='Y Font Size', default=24, min=8, max=128)
     y_font_color: bpy.props.FloatVectorProperty(name='Y Font Color', description='Y Font Color', size=4, subtype='COLOR', default=(0, 1, 0, 1), min=0, max=1)
-    y_line_width: bpy.props.IntProperty(name='Y-Axis Line Width', description='Y-Axis Line Width', default=1, min=1, max=12)
+    y_line_width: bpy.props.IntProperty(name='Y-Axis Line Width', description='Y-Axis Line Width', default=1, min=1, max=24)
     y_line_color: bpy.props.FloatVectorProperty(name='Y-Axis Line Color', description='Y-Axis Line Color', size=4, subtype='COLOR', default=(0, 1, 0, 1), min=0, max=1)
     
-    z_font_size: bpy.props.IntProperty(name='Z Font Size', description='Z Font Size', default=24, min=8, max=64)
+    z_font_size: bpy.props.IntProperty(name='Z Font Size', description='Z Font Size', default=24, min=8, max=128)
     z_font_color: bpy.props.FloatVectorProperty(name='Z Font Color', description='Z Font Color', size=4, subtype='COLOR', default=(0, 0, 1, 1), min=0, max=1)
-    z_line_width: bpy.props.IntProperty(name='Z-Axis Line Width', description='Z-Axis Line Width', default=1, min=1, max=12)
+    z_line_width: bpy.props.IntProperty(name='Z-Axis Line Width', description='Z-Axis Line Width', default=1, min=1, max=24)
     z_line_color: bpy.props.FloatVectorProperty(name='Z-Axis Line Color', description='Z-Axis Line Color', size=4, subtype='COLOR', default=(0, 0, 1, 1), min=0, max=1)
 
 
@@ -102,10 +109,12 @@ class axis_measurement_panel_show(bpy.types.Panel):
 
         box = layout.box()
         box.operator('view3d.axis_measurement', text='Start / Stop')
+        box.prop(measure_props, 'draw_mode')
         box.separator()
         box.prop(measure_props, 'precision')
         box.separator()
         box.prop(measure_props, 'show_length')
+        box.prop(measure_props, 'show_line')
         box.separator()
         box.prop(measure_props, 'show_x_length')
         box.prop(measure_props, 'show_x_line')
@@ -129,6 +138,7 @@ class axis_measurement_panel_size(bpy.types.Panel):
 
         box = layout.box()
         box.prop(measure_props, 'length_font_size')
+        box.prop(measure_props, 'length_line_width')
         box.separator()
         box.prop(measure_props, 'x_font_size')
         box.prop(measure_props, 'y_font_size')
@@ -151,6 +161,7 @@ class axis_measurement_panel_color(bpy.types.Panel):
 
         box = layout.box()
         box.prop(measure_props, 'length_font_color')
+        box.prop(measure_props, 'length_line_color')
         box.separator()
         box.prop(measure_props, 'x_font_color')
         box.prop(measure_props, 'y_font_color')
@@ -173,8 +184,14 @@ class axis_measurement(bpy.types.Operator):
             return {'FINISHED'}
         if bpy.context.object == None or not bpy.context.object.mode == 'EDIT':
             self._edge_coords = []
-        else:
+        elif bpy.context.scene.axis_measure_props.draw_mode == 'Selected Edges':
             self._edge_coords = utils.mesh_get_selected_edges_coords()
+        elif bpy.context.scene.axis_measure_props.draw_mode == 'Two Points':
+            self._edge_coords = []
+            selected_verts = utils.mesh_get_selected_verts_coords()
+            if len(selected_verts) == 2:
+                self._edge_coords.append((selected_verts[0], selected_verts[1]))
+
         context.area.tag_redraw()
         return {'PASS_THROUGH'}
 
@@ -206,6 +223,12 @@ class axis_measurement(bpy.types.Operator):
         mid = mathutils.Vector((end + start) / 2.0)
         utils.draw_text_3d(format(vector.length, f'.{bpy.context.scene.axis_measure_props.precision}f'), mid, bpy.context.scene.axis_measure_props.length_font_size, bpy.context.scene.axis_measure_props.length_font_color)
     
+    def draw_edge_line(self, start: mathutils.Vector, end: mathutils.Vector):
+        dist = end[0] - start[0]
+        if dist == 0:
+            return
+        utils.draw_line_3d(start, end, bpy.context.scene.axis_measure_props.length_line_width, bpy.context.scene.axis_measure_props.length_line_color)
+
     def draw_x_length(self, start: mathutils.Vector, end: mathutils.Vector):
         dist = end[0] - start[0]
         if dist == 0:
