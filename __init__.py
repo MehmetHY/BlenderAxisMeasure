@@ -180,7 +180,8 @@ class axis_measurement(bpy.types.Operator):
     def modal(self, context, event):
         if not global_vars['Active']:
             self.deactivate()
-            context.area.tag_redraw()
+            if context.area != None and context.area.type == 'VIEW_3D': 
+                context.area.tag_redraw()
             return {'FINISHED'}
         if bpy.context.object == None or not bpy.context.object.mode == 'EDIT':
             self._edge_coords = []
