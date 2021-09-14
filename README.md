@@ -1,6 +1,6 @@
 # Blender Axis Measure Add-on
 
-A Blender add-on that draws the distance between the two vertices of an edge or two vertices.
+A Blender add-on that draws the distance between two vertices or the length of the selected edges.
 
 * You need to be in Edit Mode 
 * 3D View -> N Panel -> View -> Axis Measure
