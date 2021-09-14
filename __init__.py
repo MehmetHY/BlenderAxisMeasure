@@ -192,7 +192,8 @@ class axis_measurement(bpy.types.Operator):
             if len(selected_verts) == 2:
                 self._edge_coords.append((selected_verts[0], selected_verts[1]))
 
-        context.area.tag_redraw()
+        if context.area != None and context.area.type == 'VIEW_3D': 
+            context.area.tag_redraw()
         return {'PASS_THROUGH'}
 
     def invoke(self, context, event):
